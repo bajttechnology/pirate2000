@@ -177,20 +177,24 @@ body::before{animation:drift 20s ease-in-out infinite alternate}
 
 @media(max-width:900px){.hero{grid-template-columns:1fr;gap:44px;padding-bottom:60px}.f,.f.w3,.f.w4{grid-column:span 6}.steps{grid-template-columns:1fr}nav .links a:not(.btn){display:none}section{padding:64px 0}}
 @media(prefers-reduced-motion:reduce){.js .rv{opacity:1!important;transform:none!important}*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+::selection {
+  background-color: var(--accent);
+  color: #000000;
+}
 </style>
 <script>document.documentElement.classList.add('js')</script>
 </head>
 <body>
 <nav class="top" id="nav"><div class="wrap nv">
   <a class="logo" href="#top"><img class="ico" alt="">Pirate2000</a>
-  <div class="links"><a href="#features">Features</a><a href="#screens">Screenshots</a><a href="#faq">FAQ</a><a class="btn sm dl-link" href="#download">Download</a></div>
+  <div class="links"><a href="#features">Features</a><a href="#screens">Screenshots</a><a href="#faq">FAQ</a><a class="btn sm dl-link" href={DOWNLOAD_URL} download>Download</a></div>
 </div><div class="sp" id="sp"></div></nav>
 <div class="wrap">
 <header class="hero" id="top">
   <div>
     <h1><span class="w" style="--i:0">Paste</span> <span class="w" style="--i:1">a</span> <span class="w" style="--i:2">link.</span> <em class="w" style="--i:3">Get</em> <span class="w" style="--i:4">the</span> <span class="w" style="--i:5">video.</span></h1>
     <p class="lead">Pirate2000 downloads video or music from a link in one click. One small Windows app, no installer, no account.</p>
-    <a class="btn big dl-link" href="#download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m-6-5l6 6 6-6M5 21h14"/></svg>Download for Windows</a>
+    <a class="btn big dl-link" href={DOWNLOAD_URL} download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m-6-5l6 6 6-6M5 21h14"/></svg>Download for Windows</a>
     <p class="meta"><span class="pill">v0.8</span>&nbsp; Windows 10/11 · a single EXE</p>
   </div>
   <div>
