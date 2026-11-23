@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pirate2000 – Paste a link. Get the video.</title>
+<meta name="description" content="Pirate2000 is a one-file Windows app that downloads video or music from a link in a single click.">
+<meta name="theme-color" content="#0b0d12">
+<link rel="icon" id="fav" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23fb7966'/%3E%3Cpath d='M16 7v13m-6-5l6 6 6-6' stroke='%230b0d12' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@500,700,900&display=swap">
+<style>
+:root{--bg:#0b0d12;--surface:#141821;--surface2:#1b2029;--border:#2a3140;--text:#eef2f8;--muted:#8b93a5;--accent:#fb7966;--accent-hover:#ff9484;--ink:#0b0d12;--success:#3ecf8e;--danger:#f2555a;--pill:9999px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{font-family:'Satoshi',-apple-system,"Segoe UI",Roboto,sans-serif;font-weight:500;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:clip}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(900px 500px at 85% -5%,rgba(251,121,102,.16),transparent 60%),radial-gradient(700px 500px at -5% 40%,rgba(251,121,102,.06),transparent 60%)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:var(--pill)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+nav.top{position:sticky;top:0;z-index:50;background:rgba(11,13,18,.7);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .3s,background .3s}
+nav.top.scrolled{border-color:var(--border);background:rgba(11,13,18,.88)}
+.nv{display:flex;align-items:center;justify-content:space-between;padding:14px 28px}
+.sp{position:absolute;left:0;bottom:-1px;height:3px;width:100%;background:var(--accent);transform:scaleX(0);transform-origin:left}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:22px;text-decoration:none;letter-spacing:.5px}
+.ico{width:16px;height:16px;object-fit:contain}.logo .ico{width:32px;height:32px}.bar .t{display:flex;align-items:center;gap:8px}
+nav .links{display:flex;align-items:center;gap:26px;font-size:15px;color:var(--muted)}
+nav .links a{text-decoration:none}nav .links a:hover{color:var(--text)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--accent);color:var(--ink);font:900 16px 'Satoshi',sans-serif;border:0;border-radius:var(--pill);padding:15px 30px;cursor:pointer;text-decoration:none;box-shadow:0 8px 26px rgba(251,121,102,.28);transition:transform .2s,background .2s,box-shadow .2s}
+.btn:hover{background:var(--accent-hover);transform:translateY(-2px);box-shadow:0 12px 32px rgba(251,121,102,.4)}
+.btn.sm{padding:10px 22px;font-size:14px}
+.btn.big{padding:20px 44px;font-size:20px}
+.btn svg{width:20px;height:20px}
+.btn[disabled]{background:var(--border);color:var(--muted);box-shadow:none;transform:none;cursor:default}
+
+/* HERO */
+.hero{display:grid;grid-template-columns:1fr 1.05fr;gap:56px;align-items:center;padding:48px 0 90px}
+h1{font-size:clamp(46px,6.4vw,84px);font-weight:900;line-height:.98;letter-spacing:-2px}
+h1 em{font-style:normal;color:var(--accent)}
+.lead{font-size:20px;color:var(--muted);max-width:30em;margin:26px 0 34px}
+.meta{margin-top:18px;font-size:14px;color:var(--muted)}
+.pill{display:inline-block;background:rgba(251,121,102,.15);color:var(--accent);border:1px solid rgba(251,121,102,.3);border-radius:var(--pill);padding:3px 12px;font-size:12px;font-weight:900}
+
+/* APP DEMO */
+.win{background:linear-gradient(135deg,#0b0d12,#141821);border:1px solid var(--border);border-radius:14px;box-shadow:0 40px 90px rgba(0,0,0,.55),0 0 0 1px rgba(251,121,102,.05);overflow:hidden}
+.bar{display:flex;align-items:center;justify-content:space-between;background:#0e1118;padding:9px 14px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--border)}
+.bar i{display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--border);margin-left:6px}
+.app{padding:24px 26px 20px}
+.app *{user-select:none}
+.app h3{display:flex;align-items:center;gap:12px;font-size:26px;font-weight:900;letter-spacing:1px}
+.app .sub{color:var(--muted);font-size:13px;margin:2px 0 16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.card label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:900;padding-left:14px;display:block;margin-bottom:6px}
+.inp{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--text);padding:13px 20px;border-radius:var(--pill);font:500 15px 'Satoshi',sans-serif;outline:0;transition:.3s}
+.inp:focus{border-color:var(--accent);box-shadow:0 0 20px rgba(251,121,102,.2);background:rgba(0,0,0,.5)}
+.inp::placeholder{color:#5c6478}
+.row{display:flex;gap:8px}
+.row .inp{flex:1;color:var(--muted);font-size:13px;padding:10px 18px}
+.mini{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:var(--pill);padding:0 18px;font:900 13px 'Satoshi',sans-serif;cursor:pointer}
+.mini:hover{background:var(--border)}
+.fmt{display:flex;gap:6px;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:var(--pill);padding:5px}
+.fmt button{flex:1;background:0;border:0;color:var(--muted);padding:11px 6px;border-radius:var(--pill);font:900 13px 'Satoshi',sans-serif;cursor:pointer;transition:.3s}
+.fmt button:hover{background:rgba(255,255,255,.05);color:var(--text)}
+.fmt button.on{background:var(--accent);color:var(--ink);box-shadow:0 4px 15px rgba(251,121,102,.3)}
+.hint{font-size:12px;color:var(--muted);padding-left:14px;min-height:18px;margin-top:6px;transition:opacity .2s}
+.tog{display:flex;justify-content:space-between;align-items:center;padding:8px 8px 8px 16px;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:var(--pill);font-size:13px;font-weight:900}
+.sw{position:relative;width:46px;height:26px;flex:none}
+.sw input{opacity:0;position:absolute;inset:0;width:100%;height:100%;cursor:pointer;z-index:1}
+.sw span{position:absolute;inset:0;background:var(--border);border-radius:var(--pill);transition:.3s}
+.sw span::before{content:"";position:absolute;width:18px;height:18px;left:4px;top:4px;background:var(--muted);border-radius:50%;transition:.3s}
+.sw input:checked+span{background:var(--accent)}
+.sw input:checked+span::before{transform:translateX(20px);background:var(--ink)}
+.dl{width:100%;margin-top:14px;padding:16px;font-size:17px}
+.prog{margin-top:14px;background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:16px 20px;display:none}
+.prog.show{display:block;animation:in .4s ease-out}
+@keyframes in{from{opacity:0;transform:translateY(-8px)}}
+.ptop{display:flex;justify-content:space-between;font-size:13px;font-weight:900;gap:12px}
+.track{height:10px;background:rgba(0,0,0,.4);border-radius:var(--pill);margin-top:10px;overflow:hidden}
+.fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-hover),var(--accent));background-size:200%;border-radius:var(--pill);animation:flow 1.4s linear infinite}
+.fill.ok{background:var(--success);animation:none}
+@keyframes flow{to{background-position:-200% 0}}
+.foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:12px;color:var(--muted)}
+.story{list-style:none;display:flex;gap:6px;margin-top:22px}
+.story li{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13px;font-weight:900;color:var(--muted);text-align:center;position:relative;transition:color .3s}
+.story li::before{content:"";width:12px;height:12px;border-radius:50%;background:var(--border);transition:.3s;position:relative;z-index:1}
+.story li::after{content:"";position:absolute;top:5px;left:calc(50% + 10px);right:calc(-50% + 10px);height:2px;background:var(--border);transition:.3s}
+.story li:last-child::after{display:none}
+.story li.done{color:var(--text)}.story li.done::before,.story li.done::after{background:var(--accent)}
+.story li.on{color:var(--accent)}.story li.on::before{background:var(--accent);box-shadow:0 0 0 5px rgba(251,121,102,.25);animation:pulse 1s ease-in-out infinite}
+.story li:last-child.on{color:var(--success)}.story li:last-child.on::before{background:var(--success);box-shadow:0 0 0 5px rgba(62,207,142,.25);animation:none}
+@keyframes pulse{50%{box-shadow:0 0 0 10px rgba(251,121,102,0)}}
+.dl.press{transform:scale(.97);background:var(--accent-hover)}
+.try{text-align:center;font-size:13px;color:var(--muted);margin-top:14px}
+
+/* SECTIONS */
+section{padding:90px 0}
+h2{font-size:clamp(34px,4.4vw,56px);font-weight:900;line-height:1.05;letter-spacing:-1.2px;max-width:14em}
+.intro{color:var(--muted);font-size:18px;max-width:34em;margin-top:16px}
+.feat{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;margin-top:48px}
+.f{background:var(--surface);border:1px solid var(--border);border-radius:26px;padding:30px;grid-column:span 2}
+.f.w3{grid-column:span 3}.f.w4{grid-column:span 4}
+.f h3{font-size:22px;font-weight:900;margin-bottom:8px;letter-spacing:-.3px}
+.f p{color:var(--muted);font-size:16px}
+.f.hot{background:var(--accent);border-color:var(--accent);color:var(--ink)}
+.f.hot p{color:rgba(11,13,18,.75)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.chip{background:rgba(0,0,0,.25);border:1px solid var(--border);color:var(--text);border-radius:var(--pill);padding:7px 15px;font:900 13px 'Satoshi',sans-serif;cursor:pointer;transition:.2s}
+.chip:hover,.chip.on{border-color:var(--accent);color:var(--accent)}
+.errbox{margin-top:16px;border-radius:18px;background:rgba(242,85,90,.08);border:1px solid rgba(242,85,90,.3);color:#ff8f93;padding:14px 18px;font-size:15px;min-height:76px;transition:opacity .15s}
+.bigfile{font-size:46px;font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:10px}
+
+/* SHOTS */
+.tabs{display:flex;gap:8px;margin:34px 0 20px;flex-wrap:wrap}
+.tabs button{background:0;border:1px solid var(--border);color:var(--muted);border-radius:var(--pill);padding:10px 22px;font:900 15px 'Satoshi',sans-serif;cursor:pointer;transition:.2s}
+.tabs button.on{background:var(--accent);border-color:var(--accent);color:var(--ink)}
+.shot{display:none;max-width:760px;margin:auto}
+.shot.on{display:block;animation:in .4s ease-out}
+.shot .win{aspect-ratio:760/720;display:flex;flex-direction:column}
+.shot .body{flex:1;position:relative;background:var(--surface)}
+.shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--bg)}
+.shot .ph{position:absolute;inset:18px;border:2px dashed var(--border);border-radius:16px;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);padding:20px;font-size:15px}
+.cap{text-align:center;color:var(--muted);font-size:14px;margin-top:14px}
+
+/* STEPS / FAQ */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px;counter-reset:s}
+.st{border-top:3px solid var(--accent);padding-top:20px;counter-increment:s}
+.st::before{content:counter(s);display:block;font-size:64px;font-weight:900;color:var(--accent);line-height:1;letter-spacing:-3px;margin-bottom:10px}
+.st h3{font-size:22px;font-weight:900}.st p{color:var(--muted);margin-top:6px}
+details{border-bottom:1px solid var(--border);padding:20px 0}
+summary{cursor:pointer;font-size:19px;font-weight:900;list-style:none;display:flex;justify-content:space-between;gap:20px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--accent);font-size:26px;line-height:1;transition:transform .25s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--muted);margin-top:12px;max-width:42em}
+.faq{max-width:760px;margin-top:32px}
+
+/* FINAL */
+.final{position:relative;text-align:center;padding:0 0 100px}
+.final h2{margin:0 auto}
+.final .btn{margin-top:34px}
+.reqs{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:26px;font-size:14px;color:var(--muted)}
+.reqs span{border:1px solid var(--border);border-radius:var(--pill);padding:5px 16px}
+footer{border-top:1px solid var(--border);padding:30px 0 40px;color:var(--muted);font-size:14px;text-align:center}
+footer p+p{margin-top:6px;font-size:13px}
+
+
+/* MOTION */
+body::before{animation:drift 20s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(-3%,3%) scale(1.1)}}
+.w{display:inline-block;animation:rise .9s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i)*90ms + 150ms)}
+@keyframes rise{from{opacity:0;transform:translateY(.55em) rotate(2deg)}}
+.js .rv{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.8,.2,1),transform .8s cubic-bezier(.2,.8,.2,1)}
+.js .rv.in{opacity:1;transform:none}
+.btn.big svg{animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+.f{position:relative;overflow:hidden}
+.f::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(280px circle at var(--mx,50%) var(--my,0%),rgba(251,121,102,.16),transparent 70%)}
+.f.hot::before{background:radial-gradient(280px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.3),transparent 70%)}
+.f:hover::before{opacity:1}
+.mf{display:flex;gap:6px;margin-top:20px}
+.mf span{flex:1;text-align:center;border:1px solid var(--border);border-radius:var(--pill);padding:8px 4px;font-size:13px;font-weight:900;color:var(--muted);animation:hl 9s infinite}
+.mf span:nth-child(2){animation-delay:3s}.mf span:nth-child(3){animation-delay:6s}
+@keyframes hl{0%,30%{background:var(--accent);border-color:var(--accent);color:var(--ink)}34%,100%{background:transparent}}
+.pl{margin-top:22px;font-size:14px;font-weight:900}
+.pl .fill{transition:width .5s}
+.par{display:grid;gap:8px;margin-top:24px}
+.par i{display:block;height:7px;border-radius:var(--pill);background:rgba(0,0,0,.35);overflow:hidden}
+.par i::after{content:"";display:block;height:100%;border-radius:var(--pill);background:var(--accent);animation:grow 2.6s ease-in-out infinite}
+.par i:nth-child(2)::after{animation-duration:3.3s;animation-delay:.4s}.par i:nth-child(3)::after{animation-duration:2.1s;animation-delay:.9s}.par i:nth-child(4)::after{animation-duration:3.8s;animation-delay:.2s}
+@keyframes grow{0%{width:0}80%,100%{width:100%}}
+.belt{overflow:hidden;margin-bottom:70px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.rail{display:flex;width:max-content;animation:belt 40s linear infinite}
+.belt:hover .rail{animation-play-state:paused}
+.fc{flex:none;margin-right:12px;border:1px solid var(--border);background:var(--surface);border-radius:var(--pill);padding:10px 22px;font-weight:900;font-size:15px}
+.fc.mp4{color:var(--accent)}.fc.mp3{color:var(--success)}
+@keyframes belt{to{transform:translateX(-50%)}}
+
+@media(max-width:900px){.hero{grid-template-columns:1fr;gap:44px;padding-bottom:60px}.f,.f.w3,.f.w4{grid-column:span 6}.steps{grid-template-columns:1fr}nav .links a:not(.btn){display:none}section{padding:64px 0}}
+@media(prefers-reduced-motion:reduce){.js .rv{opacity:1!important;transform:none!important}*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+<nav class="top" id="nav"><div class="wrap nv">
+  <a class="logo" href="#top"><img class="ico" alt="">Pirate2000</a>
+  <div class="links"><a href="#features">Features</a><a href="#screens">Screenshots</a><a href="#faq">FAQ</a><a class="btn sm dl-link" href="#download">Download</a></div>
+</div><div class="sp" id="sp"></div></nav>
+<div class="wrap">
+<header class="hero" id="top">
+  <div>
+    <h1><span class="w" style="--i:0">Paste</span> <span class="w" style="--i:1">a</span> <span class="w" style="--i:2">link.</span> <em class="w" style="--i:3">Get</em> <span class="w" style="--i:4">the</span> <span class="w" style="--i:5">video.</span></h1>
+    <p class="lead">Pirate2000 downloads video or music from a link in one click. One small Windows app, no installer, no account.</p>
+    <a class="btn big dl-link" href="#download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m-6-5l6 6 6-6M5 21h14"/></svg>Download for Windows</a>
+    <p class="meta"><span class="pill">v0.8</span>&nbsp; Windows 10/11 · a single EXE</p>
+  </div>
+  <div>
+    <div class="win" aria-label="Interactive demo of the Pirate2000 window">
+      <div class="bar"><span class="t"><img class="ico" alt="">Pirate2000 0.8</span><span><i></i><i></i><i></i></span></div>
+      <div class="app">
+        <h3>Pirate2000 <span class="pill">v0.8</span></h3>
+        <p class="sub">Download video or music with a single click</p>
+        <div class="card">
+          <div><label for="u">Video link</label><input class="inp" id="u" type="text" placeholder="Paste the URL here…" autocomplete="off"></div>
+          <div><label>Save to folder</label><div class="row"><input class="inp" value="C:\Users\you\Downloads" readonly tabindex="-1"><button class="mini" type="button">Browse…</button></div></div>
+          <div><label>File format</label>
+            <div class="fmt" id="fmt">
+              <button class="on" data-h="H.264 + AAC – plays in any player and video editor.">MP4 compatible</button>
+              <button data-h="Highest resolution the video offers (VP9/AV1 may not play everywhere).">MP4 max quality</button>
+              <button data-h="Audio only, 320 kbps.">MP3 audio</button>
+            </div>
+            <div class="hint" id="hint">H.264 + AAC – plays in any player and video editor.</div>
+          </div>
+          <div class="tog">Download the whole playlist<span class="sw"><input type="checkbox" id="pl" aria-label="Download the whole playlist"><span></span></span></div>
+        </div>
+        <button class="btn dl" id="go" type="button">Download</button>
+        <div class="prog" id="prog"><div class="ptop"><span id="st">Preparing download…</span><span id="pc">0 %</span></div><div class="track"><div class="fill" id="fl"></div></div></div>
+        <div class="foot"><span>yt-dlp inside</span><span>Open folder</span></div>
+      </div>
+    </div>
+    <ol class="story" id="story"><li>Link arrives</li><li>Identified online</li><li>Downloading</li><li>Ready</li></ol>
+    <p class="try">Watch it work – or click in and try it yourself. Nothing is really downloaded.</p>
+  </div>
+</header>
+</div>
+
+<section id="features"><div class="wrap">
+  <h2>Small app. Does one thing well.</h2>
+  <p class="intro">No settings maze, no ads, no sign-up. You get a link box, three formats and a progress bar.</p>
+  <div class="feat">
+    <div class="f hot w3"><div class="bigfile">1 file</div><h3>Runs as a single EXE</h3><p>ffmpeg and everything else is packed inside. Download it, double-click it, done. Nothing to install or unzip.</p></div>
+    <div class="f w3"><h3>Three formats, no guessing</h3><p>MP4 compatible plays in any player and editor. MP4 max quality takes the highest resolution available. MP3 saves audio at 320 kbps.</p><div class="mf"><span>MP4 compatible</span><span>MP4 max</span><span>MP3</span></div></div>
+    <div class="f"><h3>Whole playlists</h3><p>Flip one switch and the progress bar counts through every video: “Video 3/12”.</p><div class="pl"><b id="plc">Video 1/12</b><div class="track"><div class="fill" id="plf" style="width:8%"></div></div></div></div>
+    <div class="f"><h3>Built to keep going</h3><p>Failed pieces are retried up to 10 times and downloaded in 4 parts at once.</p><div class="par"><i></i><i></i><i></i><i></i></div></div>
+    <div class="f"><h3>Your folder</h3><p>Files land in Downloads by default. Pick any other folder with Browse.</p></div>
+    <div class="f w4"><h3>Errors you can read</h3><p>When something goes wrong, you get a plain sentence instead of a stack trace. Tap a few:</p>
+      <div class="chips" id="chips"></div><div class="errbox" id="err">Tap an error above to see what Pirate2000 tells you.</div></div>
+    <div class="f"><h3>Detailed log, only if needed</h3><p>Technical details go to a log file in Downloads, so the window stays clean.</p></div>
+  </div>
+</div></section>
+
+<section id="screens"><div class="wrap">
+  <h2>See it in action</h2>
+  <div class="tabs" id="tabs"><button class="on" data-t="0">Main window</button><button data-t="1">Downloading</button><button data-t="2">Done</button></div>
+  <!-- Put your screenshots into the "screenshots" folder: main.png, downloading.png, done.png -->
+  <div class="shot on"><div class="win"><div class="bar"><span>Pirate2000 0.8</span></div><div class="body"><div class="ph">Screenshot goes here<br>(screenshots/main.png)</div><img src="screenshots/main.png" alt="Pirate2000 main window" onerror="this.remove()"></div></div><p class="cap">Paste a link, pick a format, press Download.</p></div>
+  <div class="shot"><div class="win"><div class="bar"><span>Pirate2000 0.8</span></div><div class="body"><div class="ph">Screenshot goes here<br>(screenshots/downloading.png)</div><img src="screenshots/downloading.png" alt="Download in progress" onerror="this.remove()"></div></div><p class="cap">Live progress with speed in MB/s.</p></div>
+  <div class="shot"><div class="win"><div class="bar"><span>Pirate2000 0.8</span></div><div class="body"><div class="ph">Screenshot goes here<br>(screenshots/done.png)</div><img src="screenshots/done.png" alt="Download finished" onerror="this.remove()"></div></div><p class="cap">Done – and it tells you exactly where the file is.</p></div>
+</div></section>
+
+<section><div class="wrap">
+  <h2>Three steps. That’s all.</h2>
+  <div class="steps">
+    <div class="st"><h3>Get the EXE</h3><p>One file, saved wherever you like.</p></div>
+    <div class="st"><h3>Paste a link</h3><p>Copy the video address and drop it in the box.</p></div>
+    <div class="st"><h3>Pick a format</h3><p>MP4 or MP3, then press Download.</p></div>
+  </div>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <h2>Questions</h2>
+  <div class="faq">
+    <details><summary>Does it need installing?</summary><p>No. Pirate2000 is a single EXE that runs on its own. Delete the file and it’s gone.</p></details>
+    <details><summary>Which systems does it run on?</summary><p>Windows.</p></details>
+    <details><summary>Where do my files go?</summary><p>Into your Downloads folder, unless you choose another one with Browse… in the app.</p></details>
+    <details><summary>A download failed. What now?</summary><p>Read the message under the progress bar – it says what happened in plain words. Technical details are saved in a log file called Pirate2000_bugs in your Downloads folder.</p></details>
+    <details><summary>Is anything I download my responsibility?</summary><p>Yes. Only download content you have the right to save.</p></details>
+  </div>
+</div></section>
+
+<div class="final" id="download">
+  <div class="belt"><div class="rail" id="rail"></div></div>
+  <div class="wrap">
+    <h2>Ready to set sail?</h2>
+    <a class="btn big" id="dl" href="#download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m-6-5l6 6 6-6M5 21h14"/></svg>Download Pirate2000 v0.8</a>
+    <div class="reqs"><span>Windows</span><span>Single EXE</span><span>No account</span></div>
+  </div>
+</div>
+
+<footer><div class="wrap"><p>Pirate2000 · powered by yt-dlp and ffmpeg</p><p>Download only content you have the right to save.</p></div></footer>
+
+<script>
+// Set this once the GitHub release exists (direct link to the EXE asset).
+const DOWNLOAD_URL = "https://github.com/bajttechnology/pirate2000/releases/download/v0.8/Pirate2000.exe";
+
+const $ = id => document.getElementById(id);
+if (DOWNLOAD_URL) { const d = $('dl'); d.href = DOWNLOAD_URL; d.setAttribute('download', ''); document.querySelectorAll('.dl-link').forEach(a => { a.href = DOWNLOAD_URL; a.setAttribute('download', ''); }); }
+
+// Your logo file, placed next to index.html (PNG or SVG). Falls back to a built-in icon if missing.
+const ICON = "icon.png";
+const fav = $('fav'), FALLBACK = fav.href;
+document.querySelectorAll('.ico').forEach(i => { i.onerror = () => { i.onerror = null; i.src = FALLBACK; }; i.src = ICON; });
+const ti = new Image(); ti.onload = () => { fav.href = ICON; }; ti.src = ICON;
+
+/* Live demo + looping story */
+let busy = false, run = 0, auto = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmtBtns = [...document.querySelectorAll('#fmt button')];
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function pick(i) {
+  fmtBtns.forEach((x, j) => x.classList.toggle('on', i === j));
+  const h = $('hint'); h.style.opacity = 0;
+  setTimeout(() => { h.textContent = fmtBtns[i].dataset.h; h.style.opacity = 1; }, 150);
+}
+fmtBtns.forEach((b, i) => b.addEventListener('click', () => { if (!busy) pick(i); }));
+$('u').addEventListener('keydown', e => { if (e.key === 'Enter') $('go').click(); });
+function setBusy(v) {
+  busy = v; $('go').disabled = v; $('go').textContent = v ? 'Downloading…' : 'Download';
+  $('u').disabled = v; $('pl').disabled = v; fmtBtns.forEach(b => b.disabled = v);
+}
+function status(t, c) { $('st').textContent = t; $('st').style.color = c || ''; }
+function stage(n) { document.querySelectorAll('#story li').forEach((li, i) => { li.classList.toggle('on', i === n); li.classList.toggle('done', i < n); }); }
+function reset() { $('u').value = ''; $('pl').checked = false; $('prog').classList.remove('show'); setBusy(false); stage(-1); status('Preparing download…'); }
+
+async function download(id, mp3, total) {
+  const fl = $('fl');
+  $('prog').classList.add('show'); fl.classList.remove('ok'); fl.style.width = '0%'; $('pc').textContent = '0 %';
+  status('Preparing download…'); setBusy(true); stage(1);
+  await sleep(auto ? 1700 : 700); if (id !== run) return;
+  stage(2);
+  for (let p = 0; p < 100; p += 0.7 + Math.random() * 1.3) {
+    const cur = Math.min(total, Math.floor(p / (100 / total)) + 1), speed = (mp3 ? 3 : 8) + Math.random() * 6;
+    $('pc').textContent = Math.round(p) + ' %'; fl.style.width = p + '%';
+    status('Downloading… ' + Math.round(p) + ' %' + (total > 1 ? ' (Video ' + cur + '/' + total + ')' : '') + ' (' + speed.toFixed(1) + ' MB/s)');
+    await sleep(90); if (id !== run) return;
+  }
+  fl.style.width = '100%'; $('pc').textContent = '100 %'; status('Processing file (ffmpeg)…');
+  await sleep(800); if (id !== run) return;
+  fl.classList.add('ok'); stage(3);
+  status('✅ Done! You’ll find the ' + (total > 1 ? 'files' : 'file') + ' in: C:\\Users\\you\\Downloads');
+  $('u').value = ''; setBusy(false);
+  return true;
+}
+
+$('go').addEventListener('click', () => {
+  if (busy) return;
+  const id = ++run;
+  if (!$('u').value.trim()) { $('prog').classList.add('show'); $('fl').style.width = '0%'; $('pc').textContent = '0 %'; stage(-1); status('❌ Please enter a URL!', 'var(--danger)'); return; }
+  stage(0);
+  download(id, fmtBtns[2].classList.contains('on'), $('pl').checked ? 3 : 1);
+});
+
+async function story() {
+  const url = 'https://www.youtube.com/watch?v=pirate2000';
+  for (let n = 0; auto; n++) {
+    const id = ++run, k = n % 3;
+    reset(); pick(k); $('pl').checked = k === 2;
+    await sleep(1300); if (id !== run) return;
+    for (const ch of url) { $('u').value += ch; stage(0); await sleep(45); if (id !== run) return; }
+    await sleep(600); if (id !== run) return;
+    $('go').classList.add('press'); await sleep(250); $('go').classList.remove('press');
+    if (!await download(id, k === 2, k === 2 ? 3 : 1)) return;
+    await sleep(3600); if (id !== run) return;
+  }
+}
+// The first touch of the demo hands control to the visitor.
+function takeOver() { if (!auto) return; auto = false; run++; $('go').classList.remove('press'); reset(); }
+document.querySelector('.win').addEventListener('pointerdown', takeOver);
+document.querySelector('.win').addEventListener('keydown', takeOver);
+if (auto) story();
+
+/* Real error messages from the app */
+const errs = {
+  'Unsupported link': 'This address is not supported. Check that it’s a link to a video.',
+  'Private video': 'The video is private, deleted, or unavailable in your country.',
+  'Members-only': 'The video is members-only.',
+  'Not started yet': 'The video hasn’t started yet (premiere / live stream).',
+  'Too many requests': 'Too many requests (429). Wait a moment and try again.',
+  'No internet': 'Internet problem. Check your connection.'
+};
+const chips = $('chips'), eb = $('err');
+Object.keys(errs).forEach(k => {
+  const c = document.createElement('button'); c.className = 'chip'; c.type = 'button'; c.textContent = k;
+  c.onclick = () => {
+    chips.querySelectorAll('.chip').forEach(x => x.classList.remove('on')); c.classList.add('on');
+    eb.style.opacity = 0; setTimeout(() => { eb.textContent = '❌ ' + errs[k]; eb.style.opacity = 1; }, 120);
+  };
+  chips.appendChild(c);
+});
+
+/* Screenshot tabs */
+const shots = document.querySelectorAll('.shot');
+document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#tabs button').forEach(x => x.classList.remove('on')); b.classList.add('on');
+  shots.forEach((s, i) => s.classList.toggle('on', i == b.dataset.t));
+}));
+
+/* Lišta, odhalenie pri skrolovaní, svetlo na kartách, pás súborov, počítadlo playlistu */
+const nav = $('nav'), sp = $('sp');
+function onScroll() {
+  const max = document.documentElement.scrollHeight - innerHeight;
+  nav.classList.toggle('scrolled', scrollY > 8);
+  sp.style.transform = 'scaleX(' + (max > 0 ? Math.min(scrollY / max, 1) : 0) + ')';
+}
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.f,.st,section h2,.intro,.tabs,details,.final h2,.reqs').forEach(el => {
+    el.classList.add('rv'); el.style.transitionDelay = Math.min([...el.parentNode.children].indexOf(el), 5) * 70 + 'ms'; io.observe(el);
+  });
+}
+document.querySelectorAll('.f').forEach(f => f.addEventListener('pointermove', e => {
+  const r = f.getBoundingClientRect(); f.style.setProperty('--mx', (e.clientX - r.left) + 'px'); f.style.setProperty('--my', (e.clientY - r.top) + 'px');
+}));
+
+const files = [['holiday-clip','mp4'],['road-trip-mix','mp3'],['lecture_01','mp4'],['podcast-ep42','mp3'],['concert-live','mp4'],['study-beats','mp3'],['summer-vlog','mp4'],['tutorial_07','mp4']];
+const set = files.map(([n, x]) => '<span class="fc ' + x + '">' + n + '.' + x + '</span>').join('');
+$('rail').innerHTML = set + set;
+
+let pn = 1;
+setInterval(() => { pn = pn % 12 + 1; $('plc').textContent = 'Video ' + pn + '/12'; $('plf').style.width = (pn / 12 * 100) + '%'; }, 1100);
+</script>
+</body>
+</html>
